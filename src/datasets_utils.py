@@ -9,13 +9,13 @@ class ThyroidUltrasoundDataset(Dataset):
     def __len__(self):
         return len(self.labels)
 
-    def __getitem__(len, idx):
-        image = decode_image(image_path[idx])
-        label = labels[idx]
+    def __getitem__(self, idx):
+        image = decode_image(self.image_paths[idx])
+        label = self.labels[idx]
 
         return image, label
 
-def get_data_loader():
+def get_datasets():
     from utils import get_dataset_path
     import os
     from sklearn.model_selection import train_test_split
