@@ -8,3 +8,8 @@ This is the repo for our final project on Machine Learning in Medicine course in
     - Nguyen Thi Ngoc Lan
     - Pham Quang Vinh
     - Pham Minh Hieu
+
+## ThyroidUltrasoundDataset
+- Returns an image and corresponding label
+    - True: malignant
+    - False: benign
