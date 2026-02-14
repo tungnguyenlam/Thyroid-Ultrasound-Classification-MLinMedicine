@@ -1,16 +1,20 @@
 from torch.utils.data import Dataset
-from torchvision.io import decode_image
+from torchvision.io import decode_image, ImageReadMode
+from torchvision.transforms import Resize
 
 class ThyroidUltrasoundDataset(Dataset):
-    def __init__(self, image_paths, labels):
+    def __init__(self, image_paths, labels, image_size: tuple = (500, 700)):
         self.image_paths = image_paths
         self.labels = labels
+        self.image_size = image_size
+        self.transformer = Resize(self.image_size)
 
     def __len__(self):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        image = decode_image(self.image_paths[idx])
+        image = decode_image(self.image_paths[idx], mode=ImageReadMode.GRAY)
+        image = self.transformer(image).float() / 255.0
         label = self.labels[idx]
 
         return image, label
