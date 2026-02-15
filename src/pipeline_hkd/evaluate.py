@@ -4,7 +4,7 @@ Generates: confusion matrix, ROC curve, PR curve, classification report.
 
 Usage:
     cd src
-    python -m pipeline_hkd.evaluate --model efficientnet --checkpoint checkpoints/best_efficientnet.pt
+    python -m pipeline_hkd.evaluate --model efficientnet --checkpoint checkpoints/efficientnet/best_efficientnet.pt
 """
 
 import argparse
@@ -209,7 +209,8 @@ def evaluate(cfg: Config, checkpoint_path: str, use_tta: bool = True):
 
     set_seed(cfg.seed)
     device = get_device()
-    os.makedirs(cfg.paths.results_dir, exist_ok=True)
+    model_results_dir = os.path.join(cfg.paths.results_dir, cfg.model.name)
+    os.makedirs(model_results_dir, exist_ok=True)
 
     # --- Data ---
     print("\n=== Loading Data ===")
@@ -249,7 +250,7 @@ def evaluate(cfg: Config, checkpoint_path: str, use_tta: bool = True):
     print(f"\n{report}")
 
     # Save report
-    report_path = os.path.join(cfg.paths.results_dir, "classification_report.txt")
+    report_path = os.path.join(model_results_dir, "classification_report.txt")
     with open(report_path, "w") as f:
         f.write(f"Model: {cfg.model.name}\n")
         f.write(f"Checkpoint: {checkpoint_path}\n")
@@ -261,26 +262,26 @@ def evaluate(cfg: Config, checkpoint_path: str, use_tta: bool = True):
 
     # --- Plots ---
     print("\n=== Generating Plots ===")
-    prefix = cfg.model.name
 
     plot_confusion_matrix(
         labels, preds,
-        os.path.join(cfg.paths.results_dir, f"{prefix}_confusion_matrix.png"),
+        os.path.join(model_results_dir, "confusion_matrix.png"),
     )
     plot_roc_curve(
         labels, probs,
-        os.path.join(cfg.paths.results_dir, f"{prefix}_roc_curve.png"),
+        os.path.join(model_results_dir, "roc_curve.png"),
     )
     plot_pr_curve(
         labels, probs,
-        os.path.join(cfg.paths.results_dir, f"{prefix}_pr_curve.png"),
+        os.path.join(model_results_dir, "pr_curve.png"),
     )
 
     # Plot training curves if log exists
-    if os.path.exists(cfg.paths.training_log):
+    training_log = os.path.join(model_results_dir, "training_log.csv")
+    if os.path.exists(training_log):
         plot_training_curves(
-            cfg.paths.training_log,
-            os.path.join(cfg.paths.results_dir, f"{prefix}_training_curves.png"),
+            training_log,
+            os.path.join(model_results_dir, "training_curves.png"),
         )
 
     print("\n=== Evaluation Complete ===")

@@ -4,7 +4,7 @@ Shows which regions of the ultrasound image the model focuses on.
 
 Usage:
     cd src
-    python -m pipeline_hkd.gradcam --model efficientnet --checkpoint checkpoints/best_efficientnet.pt --num-images 10
+    python -m pipeline_hkd.gradcam --model efficientnet --checkpoint checkpoints/efficientnet/best.pt --num-images 10
 """
 
 import argparse
@@ -102,7 +102,8 @@ def visualize_gradcam(cfg: Config, checkpoint_path: str, num_images: int = 10):
     set_seed(cfg.seed)
     device = get_device()
 
-    save_dir = os.path.join(cfg.paths.results_dir, "gradcam")
+    model_results_dir = os.path.join(cfg.paths.results_dir, cfg.model.name)
+    save_dir = os.path.join(model_results_dir, "gradcam")
     os.makedirs(save_dir, exist_ok=True)
 
     # --- Data ---
@@ -177,7 +178,7 @@ def visualize_gradcam(cfg: Config, checkpoint_path: str, num_images: int = 10):
 
     plt.suptitle(f"Grad-CAM — {cfg.model.name}", fontsize=16, y=1.01)
     plt.tight_layout()
-    save_path = os.path.join(save_dir, f"{cfg.model.name}_gradcam.png")
+    save_path = os.path.join(save_dir, "gradcam.png")
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"  Saved: {save_path}")

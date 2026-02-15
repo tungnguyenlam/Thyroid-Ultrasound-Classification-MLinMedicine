@@ -152,12 +152,13 @@ def train(cfg: Config):
 
     set_seed(cfg.seed)
     device = get_device()
-    os.makedirs(cfg.paths.results_dir, exist_ok=True)
     os.makedirs(cfg.paths.checkpoint_dir, exist_ok=True)
 
-    # --- Per-model checkpoint dir ---
+    # --- Per-model dirs ---
     model_ckpt_dir = os.path.join(cfg.paths.checkpoint_dir, cfg.model.name)
+    model_results_dir = os.path.join(cfg.paths.results_dir, cfg.model.name)
     os.makedirs(model_ckpt_dir, exist_ok=True)
+    os.makedirs(model_results_dir, exist_ok=True)
 
     # --- Data ---
     print("\n=== Loading Data ===")
@@ -196,9 +197,8 @@ def train(cfg: Config):
     print("\n=== Phase 1: Frozen Backbone ===")
     freeze_backbone(model)
 
-    # --- CSV log ---
-    log_path = cfg.paths.training_log
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    # --- CSV log (per-model results dir) ---
+    log_path = os.path.join(model_results_dir, "training_log.csv")
     csv_columns = [
         "epoch", "train_loss", "val_loss",
         "val_precision", "val_recall", "val_f1", "val_roc_auc",
