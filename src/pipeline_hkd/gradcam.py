@@ -107,7 +107,7 @@ def visualize_gradcam(cfg: Config, checkpoint_path: str, num_images: int = 10):
 
     # --- Data ---
     print("\n=== Loading Data ===")
-    _, _, test_loader, _ = get_dataloaders(cfg.data)
+    _, _, test_loader, _, _ = get_dataloaders(cfg.data)
     test_dataset = test_loader.dataset
 
     # --- Model ---

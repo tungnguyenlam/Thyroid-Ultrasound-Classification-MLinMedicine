@@ -213,7 +213,7 @@ def evaluate(cfg: Config, checkpoint_path: str, use_tta: bool = True):
 
     # --- Data ---
     print("\n=== Loading Data ===")
-    _, _, test_loader, _ = get_dataloaders(cfg.data)
+    _, _, test_loader, _, _ = get_dataloaders(cfg.data)
     test_dataset = test_loader.dataset
 
     # --- Model ---

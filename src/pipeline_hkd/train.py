@@ -2,6 +2,11 @@
 Training script with CLI, balanced epoch sampling, mixup, label smoothing,
 freeze/unfreeze fine-tuning, SWA, early stopping, checkpointing, and CSV logging.
 
+Features:
+  - tqdm progress bars for training and validation (cleared before epoch summary)
+  - Dataset info printed and saved to checkpoints/<model>/info.txt
+  - Per-model checkpoint folders: checkpoints/<model>/
+
 Usage:
     cd src
     python -m pipeline_hkd.train --model efficientnet --epochs 50
@@ -21,6 +26,7 @@ from torch.optim.swa_utils import AveragedModel, SWALR
 from sklearn.metrics import (
     precision_score, recall_score, f1_score, roc_auc_score
 )
+from tqdm import tqdm
 
 from .config import Config
 from .dataset import get_dataloaders
@@ -29,6 +35,38 @@ from .utils import (
     set_seed, get_device, save_checkpoint,
     LabelSmoothingBCELoss, mixup_data, mixup_criterion,
 )
+
+
+# ---------------------------------------------------------------------------
+# Dataset Info
+# ---------------------------------------------------------------------------
+
+def print_and_save_split_info(split_info: dict, model_name: str, checkpoint_dir: str):
+    """Print dataset split info and save to info.txt inside the model's checkpoint folder."""
+
+    lines = []
+    lines.append("=" * 50)
+    lines.append("  DATASET SPLIT INFORMATION")
+    lines.append("=" * 50)
+
+    for split_name in ["total", "train", "val", "test"]:
+        info = split_info[split_name]
+        lines.append(f"\n  {split_name.upper():>5}:  {info['total']:>5} images")
+        lines.append(f"         benign:    {info['benign']:>5}")
+        lines.append(f"         malignant: {info['malignant']:>5}")
+
+    lines.append("\n" + "=" * 50)
+
+    text = "\n".join(lines)
+    print(text)
+
+    # Save to info.txt
+    model_ckpt_dir = os.path.join(checkpoint_dir, model_name)
+    os.makedirs(model_ckpt_dir, exist_ok=True)
+    info_path = os.path.join(model_ckpt_dir, "info.txt")
+    with open(info_path, "w") as f:
+        f.write(text + "\n")
+    print(f"\n  Saved dataset info → {info_path}")
 
 
 # ---------------------------------------------------------------------------
@@ -43,7 +81,8 @@ def validate(model, loader, criterion, device):
     total_loss = 0.0
     n_batches = 0
 
-    for images, labels in loader:
+    val_bar = tqdm(loader, desc="  Validating", leave=False, ncols=100)
+    for images, labels in val_bar:
         images, labels = images.to(device), labels.to(device)
         logits = model(images)
         loss = criterion(logits, labels)
@@ -52,6 +91,9 @@ def validate(model, loader, criterion, device):
 
         all_logits.append(logits.cpu())
         all_labels.append(labels.cpu())
+
+        val_bar.set_postfix(loss=f"{total_loss / n_batches:.4f}")
+    val_bar.close()
 
     all_logits = torch.cat(all_logits)
     all_labels = torch.cat(all_labels)
@@ -113,9 +155,16 @@ def train(cfg: Config):
     os.makedirs(cfg.paths.results_dir, exist_ok=True)
     os.makedirs(cfg.paths.checkpoint_dir, exist_ok=True)
 
+    # --- Per-model checkpoint dir ---
+    model_ckpt_dir = os.path.join(cfg.paths.checkpoint_dir, cfg.model.name)
+    os.makedirs(model_ckpt_dir, exist_ok=True)
+
     # --- Data ---
     print("\n=== Loading Data ===")
-    train_loader, val_loader, _, train_sampler = get_dataloaders(cfg.data)
+    train_loader, val_loader, _, train_sampler, split_info = get_dataloaders(cfg.data)
+
+    # --- Print & save dataset info ---
+    print_and_save_split_info(split_info, cfg.model.name, cfg.paths.checkpoint_dir)
 
     # --- Model ---
     print("\n=== Building Model ===")
@@ -161,9 +210,7 @@ def train(cfg: Config):
     # --- Training ---
     best_auc = 0.0
     patience_counter = 0
-    checkpoint_path = os.path.join(
-        cfg.paths.checkpoint_dir, f"best_{cfg.model.name}.pt"
-    )
+    checkpoint_path = os.path.join(model_ckpt_dir, "best.pt")
 
     print(f"\n=== Training for {cfg.train.epochs} epochs ===\n")
 
@@ -186,7 +233,13 @@ def train(cfg: Config):
         total_train_loss = 0.0
         n_train_batches = 0
 
-        for images, labels in train_loader:
+        train_bar = tqdm(
+            train_loader,
+            desc=f"  Epoch {epoch:3d}/{cfg.train.epochs} [Train]",
+            leave=False,
+            ncols=120,
+        )
+        for images, labels in train_bar:
             images, labels = images.to(device), labels.to(device)
 
             # Mixup
@@ -207,6 +260,9 @@ def train(cfg: Config):
 
             total_train_loss += loss.item()
             n_train_batches += 1
+
+            train_bar.set_postfix(loss=f"{total_train_loss / n_train_batches:.4f}")
+        train_bar.close()
 
         avg_train_loss = total_train_loss / max(n_train_batches, 1)
 
@@ -261,7 +317,7 @@ def train(cfg: Config):
     if epoch >= swa_start:
         print("\n=== Updating SWA Batch Normalization ===")
         torch.optim.swa_utils.update_bn(train_loader, swa_model, device=device)
-        swa_path = os.path.join(cfg.paths.checkpoint_dir, f"swa_{cfg.model.name}.pt")
+        swa_path = os.path.join(model_ckpt_dir, "swa.pt")
         torch.save(swa_model.state_dict(), swa_path)
         print(f"  SWA model saved → {swa_path}")
 

@@ -187,14 +187,25 @@ def _collect_image_paths(dataset_root: str) -> Tuple[List[str], List[int]]:
     return all_paths, all_labels
 
 
+def _count_classes(labels):
+    """Count benign (0) and malignant (1) in a label list."""
+    labels_np = np.array(labels)
+    return {
+        "benign": int((labels_np == 0).sum()),
+        "malignant": int((labels_np == 1).sum()),
+        "total": len(labels_np),
+    }
+
+
 def get_dataloaders(cfg: DataConfig) -> Tuple[DataLoader, DataLoader, DataLoader,
-                                               BalancedEpochSampler]:
+                                               BalancedEpochSampler, dict]:
     """
     Build train/val/test DataLoaders with stratified split.
 
     Returns:
-        train_loader, val_loader, test_loader, train_sampler
+        train_loader, val_loader, test_loader, train_sampler, split_info
         (train_sampler is returned so the training loop can call set_epoch)
+        (split_info contains per-split class counts)
     """
     dataset_root = _download_dataset()
     all_paths, all_labels = _collect_image_paths(dataset_root)
@@ -214,6 +225,14 @@ def get_dataloaders(cfg: DataConfig) -> Tuple[DataLoader, DataLoader, DataLoader
     )
 
     print(f"  Split: train={len(train_paths)}, val={len(val_paths)}, test={len(test_paths)}")
+
+    # --- Split info ---
+    split_info = {
+        "total": _count_classes(all_labels),
+        "train": _count_classes(train_labels),
+        "val": _count_classes(val_labels),
+        "test": _count_classes(test_labels),
+    }
 
     # --- Build datasets ---
     train_transform = get_train_transforms(cfg)
@@ -249,4 +268,4 @@ def get_dataloaders(cfg: DataConfig) -> Tuple[DataLoader, DataLoader, DataLoader
         pin_memory=True,
     )
 
-    return train_loader, val_loader, test_loader, train_sampler
+    return train_loader, val_loader, test_loader, train_sampler, split_info
