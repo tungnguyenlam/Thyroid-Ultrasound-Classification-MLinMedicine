@@ -52,7 +52,9 @@ def plot_losses(output_dir: str) -> None:
             plt.subplot(2, 2, 4)
             plt.plot(epochs, val_df['recall'], label='Recall (malignant)', color='red')
             plt.plot(epochs, val_df['precision'], label='Precision (malignant)', color='blue')
-            plt.title('Recall & Precision per Epoch')
+            if 'f1' in val_df.columns:
+                plt.plot(epochs, val_df['f1'], label='F1', color='green')
+            plt.title('Recall, Precision & F1 per Epoch')
             plt.xlabel('Epoch')
             plt.ylabel('Score')
             plt.legend()

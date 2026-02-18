@@ -55,16 +55,18 @@ def main():
         model.load_state_dict(torch.load(resume_path, map_location=device))
         print(f"Loaded weights from {resume_path}")
 
-    criterion = torch.nn.BCEWithLogitsLoss()
+    pos_weight = torch.tensor([train_dataset.false_count / train_dataset.true_count], device=device)
+    print(f"Class balance — benign: {train_dataset.false_count}, malignant: {train_dataset.true_count}, pos_weight: {pos_weight.item():.4f}")
+    criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
     val_loss_file = os.path.join(output_dir, "val_loss.csv")
     if prev_epochs > 0 and not args.delete_pre and os.path.exists(val_loss_file):
         val_metrics = pd.read_csv(val_loss_file).to_dict("records")
-        best_val_recall = max(r["recall"] for r in val_metrics)
+        best_val_f1 = max(r["f1"] for r in val_metrics)
     else:
         val_metrics = []
-        best_val_recall = -1.0
+        best_val_f1 = -1.0
 
     run_training(
         model=model,
@@ -79,7 +81,7 @@ def main():
         output_dir=output_dir,
         model_dir=model_dir,
         val_metrics=val_metrics,
-        best_val_recall=best_val_recall,
+        best_val_f1=best_val_f1,
         title_prefix="SimpleCNN val | ",
     )
 

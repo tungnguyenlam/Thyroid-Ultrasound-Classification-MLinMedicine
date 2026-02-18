@@ -51,11 +51,16 @@ def validate_epoch(model, loader, criterion, device, epoch: int, num_epochs: int
     fn = ((preds_cat == 0) & (labels_cat == 1)).sum().item()
     n = len(preds_cat)
 
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
     return {
         "val_loss": total_loss / len(loader),
         "acc": (tp + tn) / n if n else 0.0,
-        "recall": tp / (tp + fn) if (tp + fn) > 0 else 0.0,
-        "precision": tp / (tp + fp) if (tp + fp) > 0 else 0.0,
+        "recall": recall,
+        "precision": precision,
+        "f1": f1,
     }
 
 
@@ -72,7 +77,7 @@ def run_training(
     output_dir: str,
     model_dir: str,
     val_metrics: list,
-    best_val_recall: float,
+    best_val_f1: float,
     title_prefix: str,
     phase_switch_at: int = None,
     on_phase_switch=None,
@@ -93,24 +98,24 @@ def run_training(
         torch.save(model.state_dict(), epoch_model_path)
         print(f"Model saved to {epoch_model_path}")
 
-        if metrics["recall"] > best_val_recall:
-            best_val_recall = metrics["recall"]
+        if metrics["f1"] > best_val_f1:
+            best_val_f1 = metrics["f1"]
             best_model_path = os.path.join(model_dir, "best_model.pt")
             torch.save(model.state_dict(), best_model_path)
-            print(f"New best model saved with val recall: {best_val_recall:.4f}")
+            print(f"New best model saved with val F1: {best_val_f1:.4f}")
 
         print(
             f"Epoch {epoch + 1}/{num_epochs} | Train Loss: {avg_train_loss:.4f} | "
             f"Val Loss: {metrics['val_loss']:.4f} | Acc: {metrics['acc']:.4f} | "
-            f"Recall: {metrics['recall']:.4f} | Precision: {metrics['precision']:.4f}"
+            f"F1: {metrics['f1']:.4f} | Recall: {metrics['recall']:.4f} | Precision: {metrics['precision']:.4f}"
         )
 
     pd.DataFrame(val_metrics).to_csv(os.path.join(output_dir, "val_loss.csv"), index=False)
     print("Training complete. Logs saved to", output_dir)
     if best_model_path:
-        print(f"Best model (this run) saved at {best_model_path} with val recall: {best_val_recall:.4f}")
+        print(f"Best model (this run) saved at {best_model_path} with val F1: {best_val_f1:.4f}")
     else:
-        print(f"No improvement over previous best recall ({best_val_recall:.4f}) in this run.")
+        print(f"No improvement over previous best F1 ({best_val_f1:.4f}) in this run.")
 
     weights_path = os.path.join(model_dir, "best_model.pt")
     if not os.path.exists(weights_path):
