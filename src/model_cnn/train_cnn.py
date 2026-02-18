@@ -29,8 +29,8 @@ def main():
     # Data
     print("Loading datasets...")
     train_dataset, val_dataset, _ = get_datasets()
-    train_loader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=train_batch_size * 2, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=True, num_workers=2, prefetch_factor=2)
+    val_loader = DataLoader(val_dataset, batch_size=train_batch_size * 2, shuffle=False, num_workers=2, prefetch_factor=2)
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Val dataset size: {len(val_dataset)}")
 
