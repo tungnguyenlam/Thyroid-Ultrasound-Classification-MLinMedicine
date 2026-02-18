@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 def main():
     # Configuration
-    num_epochs = 20
+    num_epochs = 10
     train_batch_size = 8
     output_dir = "output/model_cnn"
     model_dir = "model/model_cnn"
@@ -36,8 +36,9 @@ def main():
 
     # Model, Loss, Optimizer
     model = Simple2DConvNN().to(device)
-    pos_weight = torch.tensor((train_dataset.false_count / (train_dataset.true_count + 1e-8)), device=device)
-    criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    # pos_weight = torch.tensor((train_dataset.false_count / (train_dataset.true_count + 1e-8)), device=device)
+    # criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    criterion = torch.nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
     val_metrics = []

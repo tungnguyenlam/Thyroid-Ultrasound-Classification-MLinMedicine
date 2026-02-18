@@ -44,9 +44,9 @@ def get_datasets():
         all_path_list.append(path)
         all_label_list.append(False)
 
-    train_paths, test_paths, train_labels, test_labels = train_test_split(all_path_list, all_label_list, test_size = 0.2, random_state = 42)
+    train_paths, test_paths, train_labels, test_labels = train_test_split(all_path_list, all_label_list, test_size = 0.2, random_state = 42, stratify=all_label_list)
     
-    train_paths, val_paths, train_labels, val_labels = train_test_split(train_paths, train_labels, test_size = 0.125, random_state = 42)
+    train_paths, val_paths, train_labels, val_labels = train_test_split(train_paths, train_labels, test_size = 0.125, random_state = 42, stratify=train_labels)
 
     train_dataset = ThyroidUltrasoundDataset(train_paths, train_labels)
     val_dataset = ThyroidUltrasoundDataset(val_paths, val_labels)
