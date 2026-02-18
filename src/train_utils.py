@@ -74,11 +74,18 @@ def run_training(
     val_metrics: list,
     best_val_recall: float,
     title_prefix: str,
+    phase_switch_at: int = None,
+    on_phase_switch=None,
 ) -> None:
     best_model_path = None
+    current_optimizer = optimizer
 
     for epoch in range(start_epoch, num_epochs):
-        avg_train_loss = train_epoch(model, train_loader, criterion, optimizer, device, epoch, num_epochs, output_dir)
+        if phase_switch_at is not None and on_phase_switch is not None and epoch == phase_switch_at:
+            current_optimizer = on_phase_switch(model)
+            print(f"Phase switch at epoch {epoch + 1}: backbone unfrozen with differential LRs.")
+
+        avg_train_loss = train_epoch(model, train_loader, criterion, current_optimizer, device, epoch, num_epochs, output_dir)
         metrics = validate_epoch(model, val_loader, criterion, device, epoch, num_epochs)
         val_metrics.append(metrics)
 

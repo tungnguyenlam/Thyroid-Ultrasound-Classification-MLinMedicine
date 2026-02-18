@@ -26,3 +26,20 @@ class ResNetClassifier(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
+    def freeze_backbone(self):
+        for name, param in self.model.named_parameters():
+            if not name.startswith("fc"):
+                param.requires_grad = False
+
+    def unfreeze_backbone(self):
+        for param in self.model.parameters():
+            param.requires_grad = True
+
+    def get_param_groups(self, head_lr: float, backbone_lr: float) -> list:
+        backbone_params = [p for name, p in self.model.named_parameters() if not name.startswith("fc")]
+        head_params = list(self.model.fc.parameters())
+        return [
+            {"params": backbone_params, "lr": backbone_lr},
+            {"params": head_params, "lr": head_lr},
+        ]

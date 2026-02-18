@@ -13,13 +13,25 @@ from utils import get_device, get_previous_epoch_count, delete_previous_run
 from train_utils import run_training
 
 
+HEAD_LR = 1e-4
+BACKBONE_LR = 1e-5
+
+
+def make_finetune_optimizer(model):
+    model.unfreeze_backbone()
+    return torch.optim.Adam(model.get_param_groups(head_lr=HEAD_LR, backbone_lr=BACKBONE_LR))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--freeze-epochs", type=int, default=3,
+                        help="Epochs to train with frozen backbone before fine-tuning all layers.")
     parser.add_argument("--delete-pre", action="store_true")
     args = parser.parse_args()
 
     num_epochs = args.epochs
+    freeze_epochs = args.freeze_epochs
     train_batch_size = 8
     output_dir = "output/resnet"
     model_dir = "model/resnet"
@@ -55,7 +67,23 @@ def main():
         print(f"Loaded weights from {resume_path}")
 
     criterion = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+
+    # If resuming past the freeze boundary, start directly in phase 2
+    if prev_epochs >= freeze_epochs:
+        print(f"Starting in phase 2 (backbone already unfrozen, differential LRs).")
+        model.unfreeze_backbone()
+        optimizer = torch.optim.Adam(model.get_param_groups(head_lr=HEAD_LR, backbone_lr=BACKBONE_LR))
+        phase_switch_at = None
+        on_phase_switch = None
+    else:
+        print(f"Starting in phase 1 (backbone frozen, head LR={HEAD_LR}). "
+              f"Phase 2 starts at epoch {freeze_epochs + 1} (backbone LR={BACKBONE_LR}).")
+        model.freeze_backbone()
+        optimizer = torch.optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()), lr=HEAD_LR
+        )
+        phase_switch_at = freeze_epochs
+        on_phase_switch = make_finetune_optimizer
 
     val_loss_file = os.path.join(output_dir, "val_loss.csv")
     if prev_epochs > 0 and not args.delete_pre and os.path.exists(val_loss_file):
@@ -80,6 +108,8 @@ def main():
         val_metrics=val_metrics,
         best_val_recall=best_val_recall,
         title_prefix="ResNet val | ",
+        phase_switch_at=phase_switch_at,
+        on_phase_switch=on_phase_switch,
     )
 
 
