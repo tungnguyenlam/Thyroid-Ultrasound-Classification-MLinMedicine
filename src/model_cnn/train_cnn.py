@@ -36,7 +36,8 @@ def main():
 
     # Model, Loss, Optimizer
     model = Simple2DConvNN().to(device)
-    criterion = torch.nn.BCEWithLogitsLoss()
+    pos_weight = torch.tensor((train_dataset.false_count / (train_dataset.true_count + 1e-8)), device=device)
+    criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
     val_metrics = []

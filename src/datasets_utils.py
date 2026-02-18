@@ -8,6 +8,8 @@ class ThyroidUltrasoundDataset(Dataset):
         self.labels = labels
         self.image_size = image_size
         self.transformer = Resize(self.image_size)
+        self.true_count = sum(labels)
+        self.false_count = len(labels) - sum(labels)
 
     def __len__(self):
         return len(self.labels)
@@ -43,6 +45,7 @@ def get_datasets():
         all_label_list.append(False)
 
     train_paths, test_paths, train_labels, test_labels = train_test_split(all_path_list, all_label_list, test_size = 0.2, random_state = 42)
+    
     train_paths, val_paths, train_labels, val_labels = train_test_split(train_paths, train_labels, test_size = 0.125, random_state = 42)
 
     train_dataset = ThyroidUltrasoundDataset(train_paths, train_labels)
