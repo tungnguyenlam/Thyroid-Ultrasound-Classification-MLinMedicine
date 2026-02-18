@@ -39,8 +39,8 @@ def main():
     criterion = torch.nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
-    val_losses = []
-    best_val_loss = float("inf")
+    val_metrics = []
+    best_val_recall = -1.0
     best_model_path = None
 
     for epoch in range(num_epochs):
@@ -81,6 +81,8 @@ def main():
         # Validation
         model.eval()
         total_val_loss = 0
+        all_preds = []
+        all_labels = []
         val_pbar = tqdm(
             val_loader,
             desc=f"Epoch {epoch + 1}/{num_epochs} [Val]",
@@ -94,32 +96,49 @@ def main():
                 outputs = model(images).squeeze()
                 loss = criterion(outputs, labels)
                 total_val_loss += loss.item()
+                preds = (torch.sigmoid(outputs) >= 0.5).float()
+                all_preds.append(preds)
+                all_labels.append(labels)
 
         avg_val_loss = total_val_loss / len(val_loader)
-        val_losses.append(avg_val_loss)
+        preds_cat = torch.cat(all_preds)
+        labels_cat = torch.cat(all_labels)
+        tp = ((preds_cat == 1) & (labels_cat == 1)).sum().item()
+        tn = ((preds_cat == 0) & (labels_cat == 0)).sum().item()
+        fp = ((preds_cat == 1) & (labels_cat == 0)).sum().item()
+        fn = ((preds_cat == 0) & (labels_cat == 1)).sum().item()
+        n = len(preds_cat)
+        acc = (tp + tn) / n if n else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+
+        val_metrics.append({
+            "val_loss": avg_val_loss,
+            "acc": acc,
+            "recall": recall,
+            "precision": precision,
+        })
 
         # Save model after each epoch
         epoch_model_path = os.path.join(model_dir, f"epoch{epoch + 1}.pt")
         torch.save(model.state_dict(), epoch_model_path)
         print(f"Model saved to {epoch_model_path}")
 
-        # Check if this is the best model based on val loss
-        if avg_val_loss < best_val_loss:
-            best_val_loss = avg_val_loss
+        # Best model by recall (malignant = positive; we want to minimize missed malignancies)
+        if recall > best_val_recall:
+            best_val_recall = recall
             best_model_path = os.path.join(model_dir, "best_model.pt")
             torch.save(model.state_dict(), best_model_path)
-            print(f"New best model saved with val loss: {best_val_loss:.4f}")
+            print(f"New best model saved with val recall: {best_val_recall:.4f}")
 
-        # Log summary
         print(
-            f"Epoch {epoch + 1}/{num_epochs} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f}"
+            f"Epoch {epoch + 1}/{num_epochs} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Acc: {acc:.4f} | Recall: {recall:.4f} | Precision: {precision:.4f}"
         )
 
-    # Save validation loss history
-    val_loss_df = pd.DataFrame(val_losses, columns=["val_loss"])
+    val_loss_df = pd.DataFrame(val_metrics)
     val_loss_df.to_csv(os.path.join(output_dir, "val_loss.csv"), index=False)
     print("Training complete. Logs saved to", output_dir)
-    print(f"Best model saved at {best_model_path} with val loss: {best_val_loss:.4f}")
+    print(f"Best model saved at {best_model_path} with val recall: {best_val_recall:.4f}")
 
 
 if __name__ == "__main__":
