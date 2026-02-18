@@ -1,4 +1,3 @@
-
 from torch import nn
 import torch
 
@@ -22,8 +21,10 @@ class Simple2DConvNN(nn.Module):
         super().__init__()
         self.conv1 = DoubleConv(1, 32)
         self.pool1 = nn.MaxPool2d(2)
-        self.conv2 = DoubleConv(32, 16)
+        self.conv2 = DoubleConv(32, 64)
         self.pool2 = nn.MaxPool2d(2)    
+        self.conv3 = DoubleConv(64, 128)
+        self.pool3 = nn.MaxPool2d(2)
         self.flatten = nn.Flatten()
 
         self.flattened_size = self._get_flatten_size(input_shape)
@@ -44,6 +45,8 @@ class Simple2DConvNN(nn.Module):
             output = self.pool1(output)
             output = self.conv2(output)
             output = self.pool2(output)
+            output = self.conv3(output)
+            output = self.pool3(output)
             return output.view(1, -1).size(1)
 
     def forward(self, x):
@@ -51,6 +54,8 @@ class Simple2DConvNN(nn.Module):
         x = self.pool1(x)
         x = self.conv2(x)
         x = self.pool2(x)
+        x = self.conv3(x)
+        x = self.pool3(x)
         x = self.flatten(x)
         logits = self.fc(x)
         return logits

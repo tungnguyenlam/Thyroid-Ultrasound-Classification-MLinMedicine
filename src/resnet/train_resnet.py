@@ -2,10 +2,9 @@ import sys
 import os
 import argparse
 
-# Add parent directory to sys.path to import modules from src/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from simple_cnn import Simple2DConvNN
+from resnet_classifier import ResNetClassifier
 import torch
 from torch.utils.data import DataLoader
 from datasets_utils import get_datasets
@@ -22,8 +21,8 @@ def main():
 
     num_epochs = args.epochs
     train_batch_size = 8
-    output_dir = "output/model_cnn"
-    model_dir = "model/model_cnn"
+    output_dir = "output/resnet"
+    model_dir = "model/resnet"
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(model_dir, exist_ok=True)
 
@@ -31,7 +30,7 @@ def main():
         delete_previous_run(output_dir, model_dir)
 
     prev_epochs = get_previous_epoch_count(output_dir, model_dir)
-    start_epoch = prev_epochs  # 0-indexed start; resumes from epoch prev_epochs+1
+    start_epoch = prev_epochs
 
     if prev_epochs > 0 and not args.delete_pre:
         if num_epochs <= prev_epochs:
@@ -41,11 +40,9 @@ def main():
     else:
         print(f"Starting fresh training for {num_epochs} epoch(s).")
 
-    # Device
     device = get_device()
     print(f"Device: {device}")
 
-    # Data
     print("Loading datasets...")
     train_dataset, val_dataset, _ = get_datasets()
     train_loader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=True, num_workers=2, prefetch_factor=2)
@@ -53,20 +50,16 @@ def main():
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Val dataset size: {len(val_dataset)}")
 
-    # Model, Loss, Optimizer
-    model = Simple2DConvNN().to(device)
+    model = ResNetClassifier().to(device)
 
     if prev_epochs > 0 and not args.delete_pre:
         resume_path = os.path.join(model_dir, f"epoch{prev_epochs}.pt")
         model.load_state_dict(torch.load(resume_path, map_location=device))
         print(f"Loaded weights from {resume_path}")
 
-    # pos_weight = torch.tensor((train_dataset.false_count / (train_dataset.true_count + 1e-8)), device=device)
-    # criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     criterion = torch.nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
-    # Load previous val metrics if resuming
     val_loss_file = os.path.join(output_dir, "val_loss.csv")
     if prev_epochs > 0 and not args.delete_pre and os.path.exists(val_loss_file):
         val_metrics = pd.read_csv(val_loss_file).to_dict("records")
@@ -82,7 +75,6 @@ def main():
         train_loss_history = []
         total_train_loss = 0
 
-        # Tqdm progress bar for training loop
         train_pbar = tqdm(
             train_loader, desc=f"Epoch {epoch + 1}/{num_epochs} [Train]", unit="batch"
         )
@@ -99,20 +91,13 @@ def main():
             loss_val = loss.item()
             total_train_loss += loss_val
             train_loss_history.append(loss_val)
-
-            # Update progress bar
             train_pbar.set_postfix(loss=f"{loss_val:.4f}")
 
-        # Calculate average train loss
         avg_train_loss = total_train_loss / len(train_loader)
 
-        # Save epoch loss history
         epoch_loss_df = pd.DataFrame(train_loss_history, columns=["loss"])
-        epoch_loss_df.to_csv(
-            os.path.join(output_dir, f"epoch{epoch + 1}.csv"), index=False
-        )
+        epoch_loss_df.to_csv(os.path.join(output_dir, f"epoch{epoch + 1}.csv"), index=False)
 
-        # Validation
         model.eval()
         total_val_loss = 0
         all_preds = []
@@ -153,12 +138,10 @@ def main():
             "precision": precision,
         })
 
-        # Save model after each epoch
         epoch_model_path = os.path.join(model_dir, f"epoch{epoch + 1}.pt")
         torch.save(model.state_dict(), epoch_model_path)
         print(f"Model saved to {epoch_model_path}")
 
-        # Best model by recall (malignant = positive; we want to minimize missed malignancies)
         if recall > best_val_recall:
             best_val_recall = recall
             best_model_path = os.path.join(model_dir, "best_model.pt")
