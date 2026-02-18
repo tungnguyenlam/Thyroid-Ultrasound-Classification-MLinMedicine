@@ -13,8 +13,13 @@ class ResNetClassifier(nn.Module):
         # Replace final FC: binary classification
         in_features = backbone.fc.in_features
         backbone.fc = nn.Sequential(
-            nn.Dropout(p=0.4),
-            nn.Linear(in_features, 1),
+            nn.Linear(in_features, 128),
+            nn.Dropout(p=0.5),
+            nn.ReLU(inplace=True),
+            nn.Linear(128, 32),
+            nn.Dropout(p=0.5),
+            nn.ReLU(inplace=True),
+            nn.Linear(32, 1),
         )
 
         self.model = backbone
