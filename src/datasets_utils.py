@@ -1,7 +1,5 @@
 from torch.utils.data import Dataset
 from torchvision.io import decode_image, ImageReadMode
-from torchvision.transforms import Resize
-
 from torchvision import transforms
 
 train_transform = transforms.Compose([
@@ -14,12 +12,15 @@ train_transform = transforms.Compose([
     transforms.ColorJitter(brightness=0.2, contrast=0.2),
 ])
 
+val_transform = transforms.Compose([
+    transforms.Resize((500, 700)),
+])
+
 class ThyroidUltrasoundDataset(Dataset):
-    def __init__(self, image_paths, labels, image_size: tuple = (500, 700)):
+    def __init__(self, image_paths, labels, transform=None):
         self.image_paths = image_paths
         self.labels = labels
-        self.image_size = image_size
-        self.transformer = train_transform
+        self.transformer = transform if transform is not None else val_transform
         self.true_count = sum(labels)
         self.false_count = len(labels) - sum(labels)
 
@@ -60,9 +61,9 @@ def get_datasets():
     
     train_paths, val_paths, train_labels, val_labels = train_test_split(train_paths, train_labels, test_size = 0.125, random_state = 42, stratify=train_labels)
 
-    train_dataset = ThyroidUltrasoundDataset(train_paths, train_labels)
-    val_dataset = ThyroidUltrasoundDataset(val_paths, val_labels)
-    test_dataset = ThyroidUltrasoundDataset(test_paths, test_labels)
+    train_dataset = ThyroidUltrasoundDataset(train_paths, train_labels, transform=train_transform)
+    val_dataset = ThyroidUltrasoundDataset(val_paths, val_labels, transform=val_transform)
+    test_dataset = ThyroidUltrasoundDataset(test_paths, test_labels, transform=val_transform)
 
     return train_dataset, val_dataset, test_dataset
 
