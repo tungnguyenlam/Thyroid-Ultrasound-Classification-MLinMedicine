@@ -16,11 +16,12 @@ from train_utils import run_training
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--delete-pre", action="store_true")
     args = parser.parse_args()
 
     num_epochs = args.epochs
-    train_batch_size = 8
+    train_batch_size = args.batch_size
     output_dir = "output/model_cnn"
     model_dir = "model/model_cnn"
     os.makedirs(output_dir, exist_ok=True)

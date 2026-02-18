@@ -27,12 +27,13 @@ def main():
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--freeze-epochs", type=int, default=3,
                         help="Epochs to train with frozen backbone before fine-tuning all layers.")
+    parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--delete-pre", action="store_true")
     args = parser.parse_args()
 
     num_epochs = args.epochs
     freeze_epochs = args.freeze_epochs
-    train_batch_size = 8
+    train_batch_size = args.batch_size
     output_dir = "output/resnet"
     model_dir = "model/resnet"
     os.makedirs(output_dir, exist_ok=True)
