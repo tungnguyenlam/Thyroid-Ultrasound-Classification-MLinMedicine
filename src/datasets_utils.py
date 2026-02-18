@@ -2,12 +2,24 @@ from torch.utils.data import Dataset
 from torchvision.io import decode_image, ImageReadMode
 from torchvision.transforms import Resize
 
+from torchvision import transforms
+
+train_transform = transforms.Compose([
+    transforms.Resize((500, 700)),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
+    transforms.RandomRotation(degrees=15),
+    transforms.RandomAffine(degrees=0, translate=(0.05, 0.05)),
+    # Ultrasound-specific: simulate gain variation
+    transforms.ColorJitter(brightness=0.2, contrast=0.2),
+])
+
 class ThyroidUltrasoundDataset(Dataset):
     def __init__(self, image_paths, labels, image_size: tuple = (500, 700)):
         self.image_paths = image_paths
         self.labels = labels
         self.image_size = image_size
-        self.transformer = Resize(self.image_size)
+        self.transformer = train_transform
         self.true_count = sum(labels)
         self.false_count = len(labels) - sum(labels)
 
