@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import torch
 from torch.utils.data import DataLoader
 import pandas as pd
-from resnet_classifier import ResNetClassifier
+from resnet_classifier import ResNet18Classifier
 from datasets_utils import get_datasets
 from utils import get_device, get_previous_epoch_count, delete_previous_run
 from train_utils import run_training
@@ -34,8 +34,8 @@ def main():
     num_epochs = args.epochs
     freeze_epochs = args.freeze_epochs
     train_batch_size = args.batch_size
-    output_dir = "output/resnet"
-    model_dir = "model/resnet"
+    output_dir = "output/resnet_18"
+    model_dir = "model/resnet_18"
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(model_dir, exist_ok=True)
 
@@ -61,7 +61,7 @@ def main():
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Val dataset size: {len(val_dataset)}")
 
-    model = ResNetClassifier().to(device)
+    model = ResNet18Classifier().to(device)
     if prev_epochs > 0 and not args.delete_pre:
         resume_path = os.path.join(model_dir, f"epoch{prev_epochs}.pt")
         model.load_state_dict(torch.load(resume_path, map_location=device))
@@ -110,7 +110,7 @@ def main():
         model_dir=model_dir,
         val_metrics=val_metrics,
         best_val_f1=best_val_f1,
-        title_prefix="ResNet val | ",
+        title_prefix="ResNet 18 val | ",
         phase_switch_at=phase_switch_at,
         on_phase_switch=on_phase_switch,
     )

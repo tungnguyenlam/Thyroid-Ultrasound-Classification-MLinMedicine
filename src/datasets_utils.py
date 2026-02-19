@@ -6,10 +6,10 @@ train_transform = transforms.Compose([
     transforms.Resize((500, 700)),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
-    transforms.RandomRotation(degrees=15),
-    transforms.RandomAffine(degrees=0, translate=(0.05, 0.05)),
-    # Ultrasound-specific: simulate gain variation
-    transforms.ColorJitter(brightness=0.2, contrast=0.2),
+    transforms.RandomRotation(degrees=30),
+    transforms.RandomAffine(degrees=0, scale=(0.8, 1.2), translate=(0.1, 0.1), shear=15),
+    transforms.GaussianBlur(kernel_size=5, sigma=(0.1, 1.0)),
+    transforms.RandomErasing(p=0.3, scale=(0.02, 0.08))
 ])
 
 val_transform = transforms.Compose([

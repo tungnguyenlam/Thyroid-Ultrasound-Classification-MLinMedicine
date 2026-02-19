@@ -38,11 +38,11 @@ def plot_test(labels, preds, probs, output_dir: str, title_prefix: str = "") -> 
     os.makedirs(output_dir, exist_ok=True)
 
     # --- Confusion matrix ---
-    cm = confusion_matrix(labels, preds)
+    cm = confusion_matrix(labels, preds, normalize="true")
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Benign", "Malignant"])
-    disp.plot(ax=axes[0], colorbar=False)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Benign", "Malignant"], cmap = plt.cm.Blues)
+    disp.plot(ax=axes[0], colorbar=True)
     axes[0].set_title(f"{title_prefix}Confusion Matrix")
 
     # --- ROC / AUC ---

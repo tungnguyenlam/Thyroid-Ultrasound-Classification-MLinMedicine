@@ -2,7 +2,7 @@ from torch import nn
 import torchvision.models as models
 
 
-class ResNetClassifier(nn.Module):
+class ResNet18Classifier(nn.Module):
     def __init__(self):
         super().__init__()
         backbone = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
