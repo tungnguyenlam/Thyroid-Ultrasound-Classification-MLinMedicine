@@ -37,30 +37,30 @@ def run_test(model, dataset, device, batch_size: int = 16):
 def plot_test(labels, preds, probs, output_dir: str, title_prefix: str = "") -> None:
     os.makedirs(output_dir, exist_ok=True)
 
-    # --- Confusion matrix ---
-    cm = confusion_matrix(labels, preds, normalize="true")
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Benign", "Malignant"], cmap = plt.cm.Blues)
-    disp.plot(ax=axes[0], colorbar=True)
-    axes[0].set_title(f"{title_prefix}Confusion Matrix")
 
     # --- ROC / AUC ---
     fpr, tpr, _ = roc_curve(labels, probs)
     roc_auc = auc(fpr, tpr)
-    axes[1].plot(fpr, tpr, color="darkorange", label=f"AUC = {roc_auc:.3f}")
-    axes[1].plot([0, 1], [0, 1], color="navy", linestyle="--")
-    axes[1].set_xlim([0.0, 1.0])
-    axes[1].set_ylim([0.0, 1.05])
-    axes[1].set_xlabel("False Positive Rate")
-    axes[1].set_ylabel("True Positive Rate")
-    axes[1].set_title(f"{title_prefix}ROC Curve")
-    axes[1].legend(loc="lower right")
-    axes[1].grid(True)
+    axes[0].plot(fpr, tpr, color="darkorange", label=f"AUC = {roc_auc:.3f}")
+    axes[0].plot([0, 1], [0, 1], color="navy", linestyle="--")
+    axes[0].set_xlim([0.0, 1.0])
+    axes[0].set_ylim([0.0, 1.05])
+    axes[0].set_xlabel("False Positive Rate")
+    axes[0].set_ylabel("True Positive Rate")
+    axes[0].set_title(f"{title_prefix}ROC Curve")
+    axes[0].legend(loc="lower right")
+    axes[0].grid(True)
+
+    # --- Confusion matrix ---
+    cm = confusion_matrix(labels, preds, normalize='true')
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Benign", "Malignant"])
+    disp.plot(ax=axes[1], colorbar=True, cmap=plt.cm.Blues)
+    axes[1].set_title(f"{title_prefix}Confusion Matrix")
 
     plt.tight_layout()
     plot_path = os.path.join(output_dir, "test_plot.png")
-    plt.savefig(plot_path)
+    plt.savefig(plot_path, bbox_inches="tight")
     plt.close()
     print(f"Test plot saved to {plot_path}")
 
