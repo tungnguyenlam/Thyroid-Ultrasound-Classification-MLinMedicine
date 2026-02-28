@@ -14,15 +14,14 @@ seed the same images always end up in the same split, regardless of run order.
 from typing import Dict, Iterator, List, Tuple
 import numpy as np
 from PIL import Image
-import torch
 from torch.utils.data import Dataset, DataLoader, Sampler, Subset
 from torchvision import datasets, transforms
 from sklearn.model_selection import train_test_split
 
 
-###############################################################################
+#==============================================================================
 #  Transforms
-###############################################################################
+#==============================================================================
 
 def get_transforms(img_size: int, split: str) -> transforms.Compose:
     """Train split uses augmentation; val/test use resize + normalise only."""
@@ -83,9 +82,9 @@ def get_tta_transforms(img_size: int) -> List[transforms.Compose]:
     ]
 
 
-###############################################################################
+#==============================================================================
 #  Dataset
-###############################################################################
+#==============================================================================
 
 class ThyroidDataset(Dataset):
     """
@@ -110,9 +109,9 @@ class ThyroidDataset(Dataset):
         return image, label
 
 
-###############################################################################
+#==============================================================================
 #  Balanced epoch-level sampler
-###############################################################################
+#==============================================================================
 
 class BalancedEpochSampler(Sampler):
     """
@@ -165,9 +164,9 @@ class BalancedEpochSampler(Sampler):
         return iter(combined.tolist())
 
 
-###############################################################################
+#==============================================================================
 #  Fixed seeded split -> DataLoaders
-###############################################################################
+#==============================================================================
 
 def get_dataloaders(cfg: dict) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """
@@ -228,7 +227,7 @@ def get_dataloaders(cfg: dict) -> Tuple[DataLoader, DataLoader, DataLoader]:
                               shuffle=False, num_workers=4, pin_memory=True)
 
 
-    # --- Split info ---
+    # Split info
     def _count_classes(idx_array: np.ndarray) -> Dict[str, int]:
         """Return {class_name: count} for a subset defined by idx_array."""
         subset_labels = labels[idx_array]
