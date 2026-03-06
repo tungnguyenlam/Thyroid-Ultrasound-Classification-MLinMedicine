@@ -9,6 +9,7 @@ data:
   data_dir: "data/"          # root of the downloaded dataset (ImageFolder layout)
   img_size: 512              # resize to (img_size × img_size)
   num_classes: 2             # benign / malignant
+  class_names: ["benign", "malignant"]
   seed: 42                   # fixed seed -> fixed train/val/test split every run
   train_ratio: 0.70
   val_ratio:   0.15
@@ -20,8 +21,8 @@ model:
 
 #  Training
 training:
-  epochs: 30
-  batch_size: 32
+  epochs: 20
+  batch_size: 16
   lr: 0.0001
   weight_decay: 0.0001
   optimizer: "adam"          # adam | sgd | adamw
@@ -29,6 +30,8 @@ training:
   step_size: 10              # (only if scheduler == step) decay every N epochs
   gamma: 0.1                 # (only if scheduler == step) LR multiplier
   early_stopping_patience: 7 # stop if val_loss doesn't improve for N epochs
+  n_folds: 5                 # number of folds for cross-validation (train_cv)
+  use_tta: true              # use Test-Time Augmentation (5 views) at test evaluation
   # ------ Loss function --------------------------------------------------------
   loss: "focal"              # cross_entropy | weighted_cross_entropy | label_smoothing | focal | focal_ce
   loss_gamma: 2.0            # focal: focusing exponent γ  (ignored by CE / LS)

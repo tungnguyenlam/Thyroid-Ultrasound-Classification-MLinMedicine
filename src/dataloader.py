@@ -16,7 +16,7 @@ import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader, Sampler, Subset
 from torchvision import datasets, transforms
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 
 
 #==============================================================================
@@ -184,11 +184,11 @@ def get_dataloaders(cfg: dict) -> Tuple[DataLoader, DataLoader, DataLoader]:
     train_cfg = cfg["training"]
 
     data_dir    = data_cfg["data_dir"]
-    img_size    = int(data_cfg.get("img_size", 224))
+    img_size    = int(data_cfg.get("img_size", 512))
     seed        = int(data_cfg.get("seed", 42))
     train_ratio = float(data_cfg.get("train_ratio", 0.70))
     val_ratio   = float(data_cfg.get("val_ratio",   0.15))
-    batch_size  = int(train_cfg.get("batch_size", 32))
+    batch_size  = int(train_cfg.get("batch_size", 16))
 
     # Load full dataset (no transform yet) to get labels for stratification
     base_ds = ThyroidDataset(root=data_dir)
@@ -248,3 +248,122 @@ def get_dataloaders(cfg: dict) -> Tuple[DataLoader, DataLoader, DataLoader]:
     print(f"[DataLoader] Split info: {split_info}")
 
     return train_loader, val_loader, test_loader, split_info
+
+
+#==============================================================================
+#  5-Fold Cross-Validation Loaders
+#==============================================================================
+
+def get_cv_fold_loaders(
+    cfg: dict,
+    fold_idx: int,
+    n_folds: int = 5,
+) -> Tuple[DataLoader, DataLoader, DataLoader, dict]:
+    """
+    Build train / val / test DataLoaders for one fold of k-fold CV.
+
+    Strategy:
+      1. The test set (``test_ratio = 1 - train_ratio - val_ratio``) is held out
+         first using the same deterministic stratified split as ``get_dataloaders``,
+         so the test set is *identical* across all folds and the single-split run.
+      2. The remaining pool (train + val) is divided into ``n_folds`` stratified
+         folds.  Fold ``fold_idx`` is used as the validation set; the rest are
+         the training set.
+
+    Args:
+        cfg:      Parsed config dict (from ``load_config``).
+        fold_idx: Zero-based fold index in [0, n_folds).
+        n_folds:  Total number of folds (default 5).
+
+    Returns:
+        (train_loader, val_loader, test_loader, split_info)
+        split_info keys: 'fold', 'n_folds', 'train', 'val', 'test'  (class counts)
+    """
+    if not (0 <= fold_idx < n_folds):
+        raise ValueError(f"fold_idx={fold_idx} is out of range [0, {n_folds}).")
+
+    data_cfg  = cfg["data"]
+    train_cfg = cfg["training"]
+
+    data_dir    = data_cfg["data_dir"]
+    img_size    = int(data_cfg.get("img_size", 512))
+    seed        = int(data_cfg.get("seed", 42))
+    train_ratio = float(data_cfg.get("train_ratio", 0.70))
+    val_ratio   = float(data_cfg.get("val_ratio",   0.15))
+    batch_size  = int(train_cfg.get("batch_size", 32))
+
+    # Load full dataset (no transform) to get labels
+    base_ds = ThyroidDataset(root=data_dir)
+    labels  = np.array([label for _, label in base_ds.dataset.samples])
+    indices = np.arange(len(base_ds))
+
+    # Step 1: carve out the fixed test set (same as get_dataloaders)
+    test_ratio = 1.0 - train_ratio - val_ratio
+    trainval_idx, test_idx = train_test_split(
+        indices,
+        test_size=test_ratio,
+        stratify=labels,
+        random_state=seed,
+    )
+
+    # Step 2: k-fold on the train+val pool
+    skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=seed)
+    splits = list(skf.split(trainval_idx, labels[trainval_idx]))
+
+    rel_train_idx, rel_val_idx = splits[fold_idx]   # relative indices into trainval_idx
+    fold_train_idx = trainval_idx[rel_train_idx]
+    fold_val_idx   = trainval_idx[rel_val_idx]
+
+    # Step 3: build split-specific datasets
+    train_ds = ThyroidDataset(root=data_dir, transform=get_transforms(img_size, "train"))
+    val_ds   = ThyroidDataset(root=data_dir, transform=get_transforms(img_size, "val"))
+    test_ds  = ThyroidDataset(root=data_dir, transform=get_transforms(img_size, "test"))
+
+    train_sampler = BalancedEpochSampler(labels=labels[fold_train_idx], seed=seed)
+
+    train_loader = DataLoader(
+        Subset(train_ds, fold_train_idx),
+        batch_size=batch_size,
+        sampler=train_sampler,
+        num_workers=4,
+        pin_memory=True,
+    )
+    val_loader = DataLoader(
+        Subset(val_ds, fold_val_idx),
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True,
+    )
+    test_loader = DataLoader(
+        Subset(test_ds, test_idx),
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True,
+    )
+
+    # Split info 
+    def _count(idx_array: np.ndarray) -> Dict[str, int]:
+        subset_labels = labels[idx_array]
+        return {
+            base_ds.classes[c]: int((subset_labels == c).sum())
+            for c in np.unique(subset_labels)
+        }
+
+    split_info = {
+        "fold":    fold_idx,
+        "n_folds": n_folds,
+        "train":   _count(fold_train_idx),
+        "val":     _count(fold_val_idx),
+        "test":    _count(test_idx),
+    }
+
+    print(
+        f"[CV fold {fold_idx + 1}/{n_folds}] "
+        f"train: {len(fold_train_idx)} | val: {len(fold_val_idx)} | test: {len(test_idx)}"
+    )
+    print(f"[CV fold {fold_idx + 1}/{n_folds}] Split info: {split_info}")
+
+    return train_loader, val_loader, test_loader, split_info
+
