@@ -438,7 +438,7 @@ def train_cv(config_path: str = "config/config.yaml") -> Dict:
                 print(f"[fold {fold_idx + 1}] Early stopping at epoch {epoch}.")
                 break
 
-        # ── Test evaluation (best checkpoint, with optional TTA) ─────────────
+        # Test evaluation (best checkpoint, with optional TTA)
         model.load_state_dict(torch.load(ckpt_path, map_location=device))
 
         use_tta  = bool(train_cfg.get("use_tta", True))

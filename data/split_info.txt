@@ -1,0 +1,3 @@
+'train': {'benign': 1549, 'malignant': 3250},
+'val': {'benign': 387, 'malignant': 813}, 
+'test': {'benign': 342, 'malignant': 717}

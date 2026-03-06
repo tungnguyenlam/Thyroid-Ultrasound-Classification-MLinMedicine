@@ -10,6 +10,7 @@ Outputs:
   - ensemble_report.txt          - classification report (precision / recall / F1)
   - ensemble_metrics.csv         - accuracy, AUC, sensitivity, specificity, F1
   - ensemble_confusion_matrix.png
+  - ensemble_roc_curve.png
 
 CLI:
   python src/test.py
@@ -30,6 +31,7 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix,
     roc_auc_score,
+    roc_curve,
 )
 from tqdm import tqdm
 
@@ -83,6 +85,42 @@ def _plot_confusion_matrix(
     plt.close(fig)
 
 
+def _plot_roc_curve(
+    all_labels: np.ndarray,
+    probs: np.ndarray,
+    class_names: list,
+    auc: float,
+    save_path: str,
+) -> None:
+    """Save a ROC curve PNG (binary or multi-class one-vs-rest)."""
+    fig, ax = plt.subplots(figsize=(6, 5), dpi=200)
+    n_classes = probs.shape[1]
+
+    if n_classes == 2:
+        # Binary: one curve for the positive (malignant) class
+        fpr, tpr, _ = roc_curve(all_labels, probs[:, 1])
+        ax.plot(fpr, tpr, lw=2, label=f"{class_names[1]} (AUC = {auc:.4f})")
+    else:
+        # Multi-class: one curve per class (OvR)
+        from sklearn.preprocessing import label_binarize
+        y_bin = label_binarize(all_labels, classes=list(range(n_classes)))
+        for i, name in enumerate(class_names):
+            fpr, tpr, _ = roc_curve(y_bin[:, i], probs[:, i])
+            cls_auc = roc_auc_score(y_bin[:, i], probs[:, i])
+            ax.plot(fpr, tpr, lw=2, label=f"{name} (AUC = {cls_auc:.4f})")
+
+    ax.plot([0, 1], [0, 1], "k--", lw=1, label="Random")
+    ax.set(xlim=[0, 1], ylim=[0, 1.02],
+           xlabel="False Positive Rate",
+           ylabel="True Positive Rate",
+           title="ROC Curve (Ensemble)")
+    ax.legend(loc="lower right")
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=200)
+    plt.close(fig)
+
+
 
 #==============================================================================
 #  CV Ensemble evaluation
@@ -97,7 +135,7 @@ def evaluate_cv_ensemble(
 
     For each fold model, runs ``N`` TTA views (original + flips + rotations)
     per image and averages the softmax probabilities. Probabilities are then
-    averaged across all fold models, giving ``n_folds × n_tta`` predictions
+    averaged across all fold models, giving ``n_folds x n_tta`` predictions
     per image in total.
 
     Args:
@@ -125,7 +163,7 @@ def evaluate_cv_ensemble(
     from torchvision import datasets as tvd
     class_names = tvd.ImageFolder(root=cfg["data"]["data_dir"]).classes
 
-    # ── Accumulate softmax probabilities from each fold ──────────────────────
+    # Accumulate softmax probabilities from each fold
     probs_sum  = None      # (N, C) running sum
     all_labels = None
 
@@ -194,7 +232,7 @@ def evaluate_cv_ensemble(
     probs_avg = probs_sum / n_folds
     all_preds = probs_avg.argmax(axis=1)
 
-    # ── Metrics ──────────────────────────────────────────────────────────────
+    # Metrics
     accuracy = float((all_preds == all_labels).mean()) * 100.0
 
     if num_classes == 2:
@@ -218,7 +256,7 @@ def evaluate_cv_ensemble(
     from sklearn.metrics import f1_score
     f1_w = f1_score(all_labels, all_preds, average="weighted")
 
-    # ── Console ──────────────────────────────────────────────────────────────
+    # Console
     print("\n" + "=" * 60)
     print(f"  Ensemble ({n_folds} folds)  -  {model_name}")
     print(f"  Accuracy    : {accuracy:.2f}%")
@@ -231,7 +269,7 @@ def evaluate_cv_ensemble(
     print("\nClassification Report:\n")
     print(report)
 
-    # ── Save outputs ─────────────────────────────────────────────────────────
+    # Save outputs
     result_dir = get_result_dir(cfg)
 
     report_path = os.path.join(result_dir, "ensemble_report.txt")
@@ -264,9 +302,13 @@ def evaluate_cv_ensemble(
     cm_path = os.path.join(result_dir, "ensemble_confusion_matrix.png")
     _plot_confusion_matrix(cm, class_names, cm_path)
 
+    roc_path = os.path.join(result_dir, "ensemble_roc_curve.png")
+    _plot_roc_curve(all_labels, probs_avg, class_names, auc, roc_path)
+
     print(f"\n[ensemble] Report       -> {report_path}")
     print(f"[ensemble] Metrics CSV  -> {metrics_csv}")
     print(f"[ensemble] Confusion mat-> {cm_path}")
+    print(f"[ensemble] ROC curve    -> {roc_path}")
 
     return {
         "accuracy":         accuracy,
@@ -276,6 +318,7 @@ def evaluate_cv_ensemble(
         "f1_weighted":      f1_w,
         "report_path":      report_path,
         "cm_path":          cm_path,
+        "roc_path":         roc_path,
         "metrics_csv_path": metrics_csv,
     }
 
