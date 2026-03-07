@@ -9,8 +9,10 @@ results/**
 
 !results/
 !results/*/
+!results/*/fold*/
 !results/*/ensemble_confusion_matrix.png
 !results/*/ensemble_roc_curve.png
 !results/*/ensemble_report.txt
+!results/*/fold*/training_log.csv
 
 checkpoints/**
