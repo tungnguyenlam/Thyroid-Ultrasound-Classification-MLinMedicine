@@ -35,3 +35,39 @@ Thyroid-Ultrasound-Classification-MLinMedicine/
 ├── .gitignore
 └── README.md
 ```
+
+# Dataset
+
+The project uses the **[Thyroid Ultrasound Dataset](https://www.kaggle.com/datasets/sowmyaabirami/thyroid-ultrasound-dataset)** from Kaggle (binary classes: `benign` / `malignant`).
+
+### 1. Set up Kaggle API credentials
+
+Create a Kaggle account, then go to **Account -> API -> Create New Token** to download `kaggle.json`.
+Place it at:
+```
+~/.kaggle/kaggle.json
+```
+Then restrict its permissions:
+```bash
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+### 2. Install dependencies
+
+```bash
+pip install kagglehub
+```
+
+### 3. Download the dataset
+
+Run the download script from the **project root**:
+```bash
+python data/download.py
+```
+
+This will automatically download and place the images into:
+```
+data/
+├── benign/
+└── malignant/
+``
