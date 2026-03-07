@@ -4,9 +4,12 @@ This is the repo for my final project on Machine Learning in Medicine course in 
 # Structure of the repo
 ```
 Thyroid-Ultrasound-Classification-MLinMedicine/
-├── cam/                        # Class Activation Maps outputs
+├── cam/                        # Class Activation Maps visualisation
 │   ├── grad_cam/
-│   └── hires_cam/
+│   │   └── run_grad_cam.py     # Ensemble Grad-CAM (any model, 5-fold)
+│   ├── hires_cam/
+│   │   └── run_hires_cam.py    # Ensemble Hi-Res CAM (any model, 5-fold)
+│   └── compare_cam.py          # Side-by-side Grad-CAM vs Hi-Res CAM
 ├── checkpoints/                # Saved model checkpoints per fold
 ├── config/
 │   └── config.yaml             # Training hyperparameters & settings
