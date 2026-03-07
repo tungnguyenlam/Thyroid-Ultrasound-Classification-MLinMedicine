@@ -17,7 +17,7 @@ data:
 
 #  Model
 model:
-  name: "res18"              # folder name inside models/  (res18 | res50 | densenet | efficientnet | ...)
+  name: "densenet"              # folder name inside models/  (res18 | res50 | densenet | efficientnet | ...)
 
 #  Training
 training:
