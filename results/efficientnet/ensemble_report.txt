@@ -1,0 +1,17 @@
+Model: efficientnet  |  Ensemble of 5 folds
+
+Accuracy    : 85.84%
+AUC         : 0.9238
+Sensitivity : 0.8703
+Specificity : 0.8333
+F1 (weighted): 0.8601
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      benign       0.75      0.83      0.79       342
+   malignant       0.92      0.87      0.89       717
+
+    accuracy                           0.86      1059
+   macro avg       0.84      0.85      0.84      1059
+weighted avg       0.86      0.86      0.86      1059

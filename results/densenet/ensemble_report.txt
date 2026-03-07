@@ -1,0 +1,17 @@
+Model: densenet  |  Ensemble of 5 folds
+
+Accuracy    : 87.35%
+AUC         : 0.9376
+Sensitivity : 0.8996
+Specificity : 0.8187
+F1 (weighted): 0.8739
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      benign       0.80      0.82      0.81       342
+   malignant       0.91      0.90      0.91       717
+
+    accuracy                           0.87      1059
+   macro avg       0.85      0.86      0.86      1059
+weighted avg       0.87      0.87      0.87      1059
