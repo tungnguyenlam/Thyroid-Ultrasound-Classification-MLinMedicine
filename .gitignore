@@ -12,3 +12,5 @@ results/**
 !results/*/ensemble_confusion_matrix.png
 !results/*/ensemble_roc_curve.png
 !results/*/ensemble_report.txt
+
+checkpoints/**
