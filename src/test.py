@@ -10,6 +10,7 @@ Outputs:
   - ensemble_report.txt          - classification report (precision / recall / F1)
   - ensemble_metrics.csv         - accuracy, AUC, sensitivity, specificity, F1
   - ensemble_confusion_matrix.png
+  - normalize_ensemble_confusion_matrix.png
   - ensemble_roc_curve.png
 
 CLI:
@@ -78,6 +79,47 @@ def _plot_confusion_matrix(
                 ha="center", va="center",
                 color="white" if cm[i, j] > thresh else "black",
                 fontsize=12,
+            )
+
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=200)
+    plt.close(fig)
+
+
+def _plot_normalized_confusion_matrix(
+    cm: np.ndarray,
+    class_names: list,
+    save_path: str,
+) -> None:
+    """Save a row-normalized (recall) confusion-matrix PNG with % annotations."""
+    cm_norm = cm.astype(float) / cm.sum(axis=1, keepdims=True)
+
+    fig, ax = plt.subplots(figsize=(5, 4), dpi=200)
+    im = ax.imshow(cm_norm, interpolation="nearest", cmap=plt.cm.Blues, vmin=0, vmax=1)
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label("Proportion", fontsize=9)
+
+    ax.set(
+        xticks=np.arange(len(class_names)),
+        yticks=np.arange(len(class_names)),
+        xticklabels=class_names,
+        yticklabels=class_names,
+        title="Normalized Confusion Matrix",
+        ylabel="True label",
+        xlabel="Predicted label",
+    )
+    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+
+    thresh = 0.5
+    for i in range(cm_norm.shape[0]):
+        for j in range(cm_norm.shape[1]):
+            color = "white" if cm_norm[i, j] > thresh else "black"
+            ax.text(
+                j, i,
+                f"{cm_norm[i, j]:.2%}\n({cm[i, j]})",
+                ha="center", va="center",
+                color=color,
+                fontsize=9,
             )
 
     fig.tight_layout()
@@ -302,12 +344,16 @@ def evaluate_cv_ensemble(
     cm_path = os.path.join(result_dir, "ensemble_confusion_matrix.png")
     _plot_confusion_matrix(cm, class_names, cm_path)
 
+    cm_norm_path = os.path.join(result_dir, "normalize_ensemble_confusion_matrix.png")
+    _plot_normalized_confusion_matrix(cm, class_names, cm_norm_path)
+
     roc_path = os.path.join(result_dir, "ensemble_roc_curve.png")
     _plot_roc_curve(all_labels, probs_avg, class_names, auc, roc_path)
 
     print(f"\n[ensemble] Report       -> {report_path}")
     print(f"[ensemble] Metrics CSV  -> {metrics_csv}")
     print(f"[ensemble] Confusion mat-> {cm_path}")
+    print(f"[ensemble] Norm. CM     -> {cm_norm_path}")
     print(f"[ensemble] ROC curve    -> {roc_path}")
 
     return {
@@ -318,6 +364,7 @@ def evaluate_cv_ensemble(
         "f1_weighted":      f1_w,
         "report_path":      report_path,
         "cm_path":          cm_path,
+        "cm_norm_path":     cm_norm_path,
         "roc_path":         roc_path,
         "metrics_csv_path": metrics_csv,
     }
