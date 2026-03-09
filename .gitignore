@@ -12,6 +12,7 @@ results/**
 !results/*/fold*/
 !results/*/ensemble_confusion_matrix.png
 !results/*/normalize_ensemble_confusion_matrix.png
+!results/*/cv_summary.csv
 !results/*/ensemble_roc_curve.png
 !results/*/ensemble_report.txt
 !results/*/fold*/training_log.csv
