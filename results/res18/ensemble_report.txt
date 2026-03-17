@@ -1,0 +1,17 @@
+Model: res18  |  Ensemble of 5 folds
+
+Accuracy    : 86.50%
+AUC         : 0.9315
+Sensitivity : 0.8801
+Specificity : 0.8333
+F1 (weighted): 0.8663
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      benign       0.77      0.83      0.80       342
+   malignant       0.92      0.88      0.90       717
+
+    accuracy                           0.86      1059
+   macro avg       0.84      0.86      0.85      1059
+weighted avg       0.87      0.86      0.87      1059
