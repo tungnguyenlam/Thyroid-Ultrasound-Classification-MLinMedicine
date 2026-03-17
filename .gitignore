@@ -1,18 +1,24 @@
 *.pyc
 *__pycache__*
-*.pth
 
+# Ignore weight files everywhere
+*.pt
+*.pth
+*.pkl
+*.pth.tar
+
+# Ignore data
 data/benign/*
 data/malignant/*
+data/split_info.txt
 
-results/**
+# Ignore checkpoints
+checkpoints/
 
-!results/
-!results/*/
-!results/*/fold*/
-!results/*/ensemble_confusion_matrix.png
-!results/*/normalize_ensemble_confusion_matrix.png
-!results/*/cv_summary.csv
-!results/*/ensemble_roc_curve.png
-!results/*/ensemble_report.txt
-!results/*/fold*/training_log.csv
+# Allow results
+results/
+
+# In models directory, ignore everything except Python scripts and subdirectories
+models/**/*
+!models/**/*.py
+!models/**/
