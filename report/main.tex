@@ -1,8 +1,4 @@
-% =========================================================
-%  Thyroid Ultrasound Classification — IEEE Conference Paper
-%  Converted from Typst (main.typ) to LaTeX
-%  Compile: pdflatex main → bibtex main → pdflatex × 2
-% =========================================================
+
 \documentclass[conference]{IEEEtran}
 
 % ---- Packages ----
@@ -22,16 +18,15 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
-% IEEEtran already handles two-column; for spanning figures use figure*
 \graphicspath{{figs/}}
 
-% =========================================================
+
 \begin{document}
 
-% ---- Title ----
+
 \title{Thyroid Ultrasound Classification}
 
-% ---- Authors ----
+
 \author{
   \IEEEauthorblockN{Chi Thanh Lam Le}
   \IEEEauthorblockA{23BI14248\\Hanoi, Vietnam\\lamlct.23bi14248@usth.edu.vn}
@@ -54,7 +49,7 @@
 
 \maketitle
 
-% ---- Abstract ----
+
 \begin{abstract}
 Thyroid nodules are a common endocrine disorder and a primary indicator of thyroid cancer,
 which accounted for approximately 821,000 new cases and 47,485 deaths globally in 2022
@@ -77,16 +72,14 @@ graph-based architectures, while training exclusively on real ultrasound images.
 Machine Learning, Medicine, Test-Time Augmentation, Thyroid
 \end{IEEEkeywords}
 
-% =========================================================
-%  I. INTRODUCTION
-% =========================================================
+
 \section{Introduction}
 
 \medskip
-Thyroid cancer is one of the most common endocrine malignancies worldwide, and timely
+Thyroid cancer is one of the most common diseases worldwide, and timely
 differentiation between benign and malignant nodules is essential for effective clinical
 management. Ultrasound imaging is the standard diagnostic modality for thyroid nodule
-assessment, yet manual interpretation remains subjective, operator-dependent, and
+assessment, but manual interpretation remains subjective, and
 labor-intensive.
 
 In this work, we propose a custom end-to-end deep learning framework for binary thyroid
@@ -97,13 +90,11 @@ Test-Time Augmentation (TTA). Grad-CAM visualizations are provided to support mo
 interpretability. Our approach achieves competitive classification performance on a publicly
 available thyroid ultrasound benchmark.
 
-% =========================================================
-%  II. RELATED WORKS
-% =========================================================
+
 \section{Related Works}
 
 Deep learning has substantially improved thyroid nodule classification from ultrasound images.
-The recently released TN5000 dataset~\cite{zhang2025tn5000} provides a biopsy-confirmed
+The recently released TN5000 dataset~\cite{zhang2025tn5000} provides a baseline
 benchmark for this task, but the two challenges remain are class imbalance and effective
 modeling of diagnostic spatial context.
 
@@ -121,15 +112,13 @@ Loss~\cite{Lin2017Focal}.
 Recent approaches employ complex architectures to capture spatial context, including Vision
 Transformers~\cite{sujini2025automated} and graph-based models that represent ultrasound
 regions as nodes~\cite{yavuz2026roi}. While effective, these models typically require
-substantial computation and large datasets. In contrast, we show that standard CNNs---ResNet-50,
-DenseNet-121, and EfficientNet-B0---can achieve competitive performance when paired with a
-strong training pipeline incorporating Mixup augmentation, Test-Time Augmentation (TTA), and a
+substantial computation and large datasets. In contrast, we show that standard CNNs (ResNet-50,
+DenseNet-121, and EfficientNet-B0 can achieve competitive performance when paired with a
+strong training pipeline that combines Mixup augmentation, Test-Time Augmentation (TTA), and a
 5-fold cross-validation ensemble to improve robustness and generalization while remaining
 computationally efficient.
 
-% =========================================================
-%  III. DATASET OVERVIEW
-% =========================================================
+
 \section{Dataset Overview}
 
 \subsection{Thyroid Ultrasound Dataset}
@@ -185,9 +174,7 @@ pretrained features to this modality.
   \label{fig:imagenet_stats}
 \end{figure*}
 
-% =========================================================
-%  IV. METHODOLOGY
-% =========================================================
+
 \section{Methodology}
 
 \subsection{Framework Overview}
@@ -493,9 +480,7 @@ Logistic Regression is trained on the out-of-fold softmax probability vectors of
 backbone models. The meta-learner is fitted on the validation folds and evaluated on the
 held-out test set using the same metrics above.
 
-% =========================================================
-%  V. EVALUATION RESULTS
-% =========================================================
+
 \section{Evaluation Results}
 
 \subsection{Models Performance Comparison}
@@ -556,9 +541,7 @@ distinguish malignant from benign cases across multiple thresholds.
   \label{fig:roc_densenet}
 \end{figure}
 
-% =========================================================
-%  VI. CONCLUSION AND FUTURE WORKS
-% =========================================================
+
 \section{Conclusion and Future Works}
 
 In this project, we have successfully developed and evaluated an end-to-end deep learning
@@ -586,13 +569,11 @@ ultrasound devices, specificity-oriented training via cost-sensitive learning an
 calibration to reduce unnecessary FNA biopsies, and extension to video-based classification
 using spatiotemporal models such as 3D-CNNs or ConvLSTMs.
 
-% ---- Bibliography ----
+
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
-% =========================================================
-%  APPENDIX
-% =========================================================
+
 \appendix
 
 \begin{figure*}[!t]
