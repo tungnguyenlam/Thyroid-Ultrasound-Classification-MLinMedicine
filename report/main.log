@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.16)  18 MAR 2026 00:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.16)  18 MAR 2026 08:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**main.tex
+**main
 (./main.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -499,24 +499,24 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
 
 -- Lines per column: 56 (exact).
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -541,7 +541,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 29.
+Package hyperref Info: Link coloring OFF on input line 24.
 
 (./main.out) (./main.out)
 \@outlinefile=\write3
@@ -549,19 +549,19 @@ Package hyperref Info: Link coloring OFF on input line 29.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 116
+LaTeX Font Info:    Trying to load font information for U+msa on input line 107
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 116
+LaTeX Font Info:    Trying to load font information for U+msb on input line 107
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 116--116
+Underfull \hbox (badness 10000) in paragraph at lines 107--107
 [][][][][]$\T1/ptm/m/n/8 https : / / www . kaggle . com / datasets / sowmyaabir
 ami /
  []
@@ -574,82 +574,77 @@ dist/fonts/enc/dvips/base/8r.enc}
 <figs/sample_images.pdf, id=154, 1273.15604pt x 485.17944pt>
 File: figs/sample_images.pdf Graphic file (type pdf)
 <use figs/sample_images.pdf>
-Package pdftex.def Info: figs/sample_images.pdf  used on input line 152.
+Package pdftex.def Info: figs/sample_images.pdf  used on input line 141.
 (pdftex.def)             Requested size: 516.0pt x 196.63725pt.
 <figs/size_distribution.pdf, id=156, 875.67104pt x 297.511pt>
 File: figs/size_distribution.pdf Graphic file (type pdf)
 <use figs/size_distribution.pdf>
-Package pdftex.def Info: figs/size_distribution.pdf  used on input line 167.
+Package pdftex.def Info: figs/size_distribution.pdf  used on input line 156.
 (pdftex.def)             Requested size: 516.0pt x 175.31659pt.
 <figs/imagenet_vs_dataset.pdf, id=158, 803.40103pt x 297.511pt>
 File: figs/imagenet_vs_dataset.pdf Graphic file (type pdf)
 <use figs/imagenet_vs_dataset.pdf>
-Package pdftex.def Info: figs/imagenet_vs_dataset.pdf  used on input line 183.
+Package pdftex.def Info: figs/imagenet_vs_dataset.pdf  used on input line 172.
 (pdftex.def)             Requested size: 516.0pt x 191.08733pt.
 <figs/framework_pipeline.png, id=160, 642.4pt x 642.4pt>
 File: figs/framework_pipeline.png Graphic file (type png)
 <use figs/framework_pipeline.png>
-Package pdftex.def Info: figs/framework_pipeline.png  used on input line 207.
+Package pdftex.def Info: figs/framework_pipeline.png  used on input line 194.
 (pdftex.def)             Requested size: 252.0pt x 251.99553pt.
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 22
-2.
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 20
+9.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 222--223
+Underfull \hbox (badness 10000) in paragraph at lines 209--210
 []\T1/ptm/b/n/10 5-fold cross-validation\T1/ptm/m/n/10 : The re-main-ing 85%
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 222--223
+Underfull \hbox (badness 10000) in paragraph at lines 209--210
 \T1/ptm/m/n/10 (train + val-i-da-tion pool) is split us-ing
  []
 
 
-Underfull \hbox (badness 3482) in paragraph at lines 253--256
+Underfull \hbox (badness 3482) in paragraph at lines 240--243
 \T1/ptm/m/n/10 are re-sized to $\OT1/cmr/m/n/10 512 \OMS/cmsy/m/n/10 ^^B \OT1/c
 mr/m/n/10 512$ \T1/ptm/m/n/10 pix-els and nor-mal-ized us-
  []
 
 
-Underfull \hbox (badness 5519) in paragraph at lines 285--290
+Underfull \hbox (badness 5519) in paragraph at lines 272--277
 \T1/ptm/m/n/10 and the fi-nal clas-si-fi-ca-tion head is re-placed with a
  []
 
 [2]
-Underfull \hbox (badness 1735) in paragraph at lines 348--353
+Underfull \hbox (badness 1735) in paragraph at lines 335--340
 []\T1/ptm/b/n/10 Sampling level --- Bal-ancedE-pochSam-pler. \T1/ptm/m/n/10 At 
 each
  []
 
 [3 <./figs/sample_images.pdf> <./figs/size_distribution.pdf>] [4 <./figs/imagen
 et_vs_dataset.pdf> <./figs/framework_pipeline.png (PNG copy)>]
-Overfull \hbox (1.43973pt too wide) in paragraph at lines 520--539
+Overfull \hbox (1.43973pt too wide) in paragraph at lines 505--524
  [][] 
  []
 
-<figs/conf_matrix3.png, id=393, 361.35pt x 289.08pt>
+<figs/conf_matrix3.png, id=395, 361.35pt x 289.08pt>
 File: figs/conf_matrix3.png Graphic file (type png)
 <use figs/conf_matrix3.png>
-Package pdftex.def Info: figs/conf_matrix3.png  used on input line 545.
+Package pdftex.def Info: figs/conf_matrix3.png  used on input line 530.
 (pdftex.def)             Requested size: 269.64185pt x 215.71553pt.
 
-Overfull \hbox (17.64185pt too wide) in paragraph at lines 545--546
+Overfull \hbox (17.64185pt too wide) in paragraph at lines 530--531
  [][] 
  []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [5]
-<figs/ROC3.png, id=412, 433.62pt x 361.35pt>
+<figs/ROC3.png, id=397, 433.62pt x 361.35pt>
 File: figs/ROC3.png Graphic file (type png)
 <use figs/ROC3.png>
-Package pdftex.def Info: figs/ROC3.png  used on input line 554.
+Package pdftex.def Info: figs/ROC3.png  used on input line 539.
 (pdftex.def)             Requested size: 252.0pt x 210.00218pt.
-
-(./main.bbl
+[5 <./figs/conf_matrix3.png>] (./main.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 51--54
 \T1/ptm/m/n/8 datasets / sowmyaabirami / thyroid-[]ultrasound-[]dataset$[], 202
 0, kag-gle
@@ -667,48 +662,48 @@ aroua /
  []
 
 )
-<figs/compare_cam_densenet1.png, id=419, 1156.32pt x 2027.4144pt>
+<figs/compare_cam_densenet1.png, id=421, 1156.32pt x 2027.4144pt>
 File: figs/compare_cam_densenet1.png Graphic file (type png)
 <use figs/compare_cam_densenet1.png>
-Package pdftex.def Info: figs/compare_cam_densenet1.png  used on input line 600
+Package pdftex.def Info: figs/compare_cam_densenet1.png  used on input line 581
 .
 (pdftex.def)             Requested size: 387.0pt x 678.51518pt.
 
 
-LaTeX Warning: Float too large for page by 10.11522pt on input line 601.
+LaTeX Warning: Float too large for page by 10.11522pt on input line 582.
 
-<figs/conf_matrix1.png, id=420, 361.35pt x 289.08pt>
+<figs/conf_matrix1.png, id=422, 361.35pt x 289.08pt>
 File: figs/conf_matrix1.png Graphic file (type png)
 <use figs/conf_matrix1.png>
-Package pdftex.def Info: figs/conf_matrix1.png  used on input line 609.
+Package pdftex.def Info: figs/conf_matrix1.png  used on input line 590.
 (pdftex.def)             Requested size: 247.6778pt x 198.1421pt.
-<figs/conf_matrix2.png, id=421, 361.35pt x 289.08pt>
+<figs/conf_matrix2.png, id=423, 361.35pt x 289.08pt>
 File: figs/conf_matrix2.png Graphic file (type png)
 <use figs/conf_matrix2.png>
-Package pdftex.def Info: figs/conf_matrix2.png  used on input line 615.
+Package pdftex.def Info: figs/conf_matrix2.png  used on input line 596.
 (pdftex.def)             Requested size: 247.6778pt x 198.1421pt.
-<figs/conf_matrix4.png, id=422, 361.35pt x 289.08pt>
+<figs/conf_matrix4.png, id=424, 361.35pt x 289.08pt>
 File: figs/conf_matrix4.png Graphic file (type png)
 <use figs/conf_matrix4.png>
-Package pdftex.def Info: figs/conf_matrix4.png  used on input line 621.
+Package pdftex.def Info: figs/conf_matrix4.png  used on input line 602.
 (pdftex.def)             Requested size: 247.6778pt x 198.1421pt.
-<figs/ROC1.png, id=423, 433.62pt x 361.35pt>
+<figs/ROC1.png, id=425, 433.62pt x 361.35pt>
 File: figs/ROC1.png Graphic file (type png)
 <use figs/ROC1.png>
-Package pdftex.def Info: figs/ROC1.png  used on input line 630.
+Package pdftex.def Info: figs/ROC1.png  used on input line 611.
 (pdftex.def)             Requested size: 247.6778pt x 206.4017pt.
-<figs/ROC2.png, id=424, 433.62pt x 361.35pt>
+<figs/ROC2.png, id=426, 433.62pt x 361.35pt>
 File: figs/ROC2.png Graphic file (type png)
 <use figs/ROC2.png>
-Package pdftex.def Info: figs/ROC2.png  used on input line 636.
+Package pdftex.def Info: figs/ROC2.png  used on input line 617.
 (pdftex.def)             Requested size: 247.6778pt x 206.4017pt.
-<figs/ROC4.png, id=425, 433.62pt x 361.35pt>
+<figs/ROC4.png, id=427, 433.62pt x 361.35pt>
 File: figs/ROC4.png Graphic file (type png)
 <use figs/ROC4.png>
-Package pdftex.def Info: figs/ROC4.png  used on input line 642.
+Package pdftex.def Info: figs/ROC4.png  used on input line 623.
 (pdftex.def)             Requested size: 247.6778pt x 206.4017pt.
 
-LaTeX Warning: Float too large for page by 24.80502pt on input line 647.
+LaTeX Warning: Float too large for page by 24.80502pt on input line 628.
 
 
 ** Conference Paper **
@@ -721,13 +716,17 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[6 <./figs/conf_matrix3.png> <./figs/ROC3.png>] [7 <./figs/compare_cam_densenet
-1.png>] [8 <./figs/conf_matrix1.png> <./figs/conf_matrix2.png> <./figs/conf_mat
-rix4.png> <./figs/ROC1.png> <./figs/ROC2.png> <./figs/ROC4.png>] (./main.aux)
+[6 <./figs/ROC3.png>] [7 <./figs/compare_cam_densenet1.png>] [8 <./figs/conf_ma
+trix1.png> <./figs/conf_matrix2.png> <./figs/conf_matrix4.png> <./figs/ROC1.png
+> <./figs/ROC2.png> <./figs/ROC4.png>] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 4D19A8B569849086040C485010A12031;4986.
  ) 
@@ -738,7 +737,7 @@ Here is how much of TeX's memory you used:
  35346 multiletter control sequences out of 15000+600000
  671816 words of font info for 153 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,344b,576s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,340b,576s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texli
@@ -754,7 +753,7 @@ re/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmri8a.pfb>
-Output written on main.pdf (8 pages, 12731961 bytes).
+Output written on main.pdf (8 pages, 12731979 bytes).
 PDF statistics:
  545 PDF objects out of 1000 (max. 8388607)
  335 compressed objects within 4 object streams
